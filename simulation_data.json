@@ -1,0 +1,207 @@
+{
+  "scenarios": {
+    "normal": {
+      "name": "Standard Conjunction (Baseline)",
+      "description": "Orbital crossing with defunct rocket stage fragment in 550 km LEO.",
+      "satellite": {
+        "id": "OG-SAT-1",
+        "name": "Sentinel-OrbitGuard",
+        "altitude_km": 550.0,
+        "velocity_km_s": 7.59,
+        "true_anomaly_deg": 45.0,
+        "inclination_deg": 51.6,
+        "battery_pct": 88.5,
+        "temperature_c": 21.4,
+        "comm_signal_pct": 98.0,
+        "propellant_kg": 42.0,
+        "max_delta_v_m_s": 120.0,
+        "orientation_deg": { "roll": 0.0, "pitch": 0.0, "yaw": 0.0 },
+        "mission_status": "OPERATIONAL"
+      },
+      "debris_list": [
+        {
+          "id": "DEBRIS-ALPHA-92",
+          "name": "Cosmos-2251 Fragment #92",
+          "altitude_km": 550.35,
+          "velocity_km_s": 7.72,
+          "true_anomaly_deg": 48.8,
+          "inclination_deg": 74.0,
+          "rcs_m2": 0.85,
+          "relative_velocity_km_s": 10.45,
+          "estimated_mass_kg": 14.2,
+          "material": "Aluminum-Lithium Alloy Skin",
+          "classification_category": "THREAT",
+          "is_primary": true
+        },
+        {
+          "id": "DEBRIS-BETA-14",
+          "name": "SL-16 Upper Stage Shard",
+          "altitude_km": 558.1,
+          "velocity_km_s": 7.55,
+          "true_anomaly_deg": 35.2,
+          "inclination_deg": 71.0,
+          "rcs_m2": 2.1,
+          "relative_velocity_km_s": 8.1,
+          "estimated_mass_kg": 45.0,
+          "material": "Titanium Pressure Tank Shell",
+          "classification_category": "RECOVERABLE",
+          "is_primary": false
+        },
+        {
+          "id": "DEBRIS-GAMMA-07",
+          "name": "Fengyun-1C Tracked Particle",
+          "altitude_km": 542.0,
+          "velocity_km_s": 7.63,
+          "true_anomaly_deg": 58.0,
+          "inclination_deg": 98.6,
+          "rcs_m2": 0.12,
+          "relative_velocity_km_s": 14.2,
+          "estimated_mass_kg": 0.4,
+          "material": "Solar Cell Fragment",
+          "classification_category": "UNCERTAIN",
+          "is_primary": false
+        }
+      ]
+    },
+    "high_speed": {
+      "name": "Hypervelocity Crossing (Extreme)",
+      "description": "Retrograde orbital crossing with high relative speed exceeding 14 km/s.",
+      "satellite": {
+        "id": "OG-SAT-1",
+        "name": "Sentinel-OrbitGuard",
+        "altitude_km": 550.0,
+        "velocity_km_s": 7.59,
+        "true_anomaly_deg": 45.0,
+        "inclination_deg": 51.6,
+        "battery_pct": 82.0,
+        "temperature_c": 22.8,
+        "comm_signal_pct": 95.0,
+        "propellant_kg": 41.5,
+        "max_delta_v_m_s": 118.0,
+        "orientation_deg": { "roll": 0.0, "pitch": 0.0, "yaw": 0.0 },
+        "mission_status": "OPERATIONAL"
+      },
+      "debris_list": [
+        {
+          "id": "DEBRIS-HYPER-01",
+          "name": "Iridium-33 Collided Fragment",
+          "altitude_km": 550.12,
+          "velocity_km_s": 7.85,
+          "true_anomaly_deg": 46.9,
+          "inclination_deg": 86.4,
+          "rcs_m2": 0.45,
+          "relative_velocity_km_s": 14.8,
+          "estimated_mass_kg": 8.0,
+          "material": "High-Density Steel Fastener",
+          "classification_category": "THREAT",
+          "is_primary": true
+        }
+      ]
+    },
+    "low_battery": {
+      "name": "Eclipse Low-Battery Mode",
+      "description": "Satellite currently in Earth's shadow; battery reduced to 19%, requiring low-energy burn.",
+      "satellite": {
+        "id": "OG-SAT-1",
+        "name": "Sentinel-OrbitGuard",
+        "altitude_km": 550.0,
+        "velocity_km_s": 7.59,
+        "true_anomaly_deg": 45.0,
+        "inclination_deg": 51.6,
+        "battery_pct": 19.2,
+        "temperature_c": 8.5,
+        "comm_signal_pct": 72.0,
+        "propellant_kg": 38.0,
+        "max_delta_v_m_s": 110.0,
+        "orientation_deg": { "roll": 0.0, "pitch": 0.0, "yaw": 0.0 },
+        "mission_status": "LOW_POWER_SURVIVAL"
+      },
+      "debris_list": [
+        {
+          "id": "DEBRIS-ECLIPSE-44",
+          "name": "Defunct CubeSat Structure",
+          "altitude_km": 550.28,
+          "velocity_km_s": 7.61,
+          "true_anomaly_deg": 47.9,
+          "inclination_deg": 53.0,
+          "rcs_m2": 0.35,
+          "relative_velocity_km_s": 9.2,
+          "estimated_mass_kg": 4.5,
+          "material": "Chassis Framework (Anodized Al)",
+          "classification_category": "THREAT",
+          "is_primary": true
+        }
+      ]
+    },
+    "sensor_failure": {
+      "name": "Sensor Covariance Glitch",
+      "description": "Primary Star Tracker degraded, creating elevated positional measurement uncertainty.",
+      "satellite": {
+        "id": "OG-SAT-1",
+        "name": "Sentinel-OrbitGuard",
+        "altitude_km": 550.0,
+        "velocity_km_s": 7.59,
+        "true_anomaly_deg": 45.0,
+        "inclination_deg": 51.6,
+        "battery_pct": 76.0,
+        "temperature_c": 24.1,
+        "comm_signal_pct": 89.0,
+        "propellant_kg": 40.0,
+        "max_delta_v_m_s": 115.0,
+        "orientation_deg": { "roll": 1.2, "pitch": -0.8, "yaw": 2.4 },
+        "mission_status": "SENSOR_DEGRADED"
+      },
+      "debris_list": [
+        {
+          "id": "DEBRIS-UNCERT-09",
+          "name": "Uncataloged Solar Panel Shard",
+          "altitude_km": 550.45,
+          "velocity_km_s": 7.68,
+          "true_anomaly_deg": 48.2,
+          "inclination_deg": 65.0,
+          "rcs_m2": 1.2,
+          "relative_velocity_km_s": 10.1,
+          "estimated_mass_kg": 12.0,
+          "material": "Multi-junction GaAs Solar Array",
+          "classification_category": "UNCERTAIN",
+          "is_primary": true
+        }
+      ]
+    },
+    "communication_loss": {
+      "name": "Ground Station Blackout",
+      "description": "Ground link down (pass over Pacific). Requires on-board autonomous AI decision authorization.",
+      "satellite": {
+        "id": "OG-SAT-1",
+        "name": "Sentinel-OrbitGuard",
+        "altitude_km": 550.0,
+        "velocity_km_s": 7.59,
+        "true_anomaly_deg": 45.0,
+        "inclination_deg": 51.6,
+        "battery_pct": 85.0,
+        "temperature_c": 19.5,
+        "comm_signal_pct": 0.0,
+        "propellant_kg": 42.0,
+        "max_delta_v_m_s": 120.0,
+        "orientation_deg": { "roll": 0.0, "pitch": 0.0, "yaw": 0.0 },
+        "mission_status": "AUTONOMOUS_SAFEGUARD"
+      },
+      "debris_list": [
+        {
+          "id": "DEBRIS-BLACKOUT-19",
+          "name": "Tumbling Payload Adapter",
+          "altitude_km": 550.3,
+          "velocity_km_s": 7.7,
+          "true_anomaly_deg": 48.5,
+          "inclination_deg": 70.0,
+          "rcs_m2": 1.8,
+          "relative_velocity_km_s": 11.0,
+          "estimated_mass_kg": 28.0,
+          "material": "Carbon Composite Ring",
+          "classification_category": "THREAT",
+          "is_primary": true
+        }
+      ]
+    }
+  }
+}

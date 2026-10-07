@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORBITGUARD AI - Space Mission Control</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- TOP MISSION CONTROL BAR -->
+    <header class="mission-header">
+        <div class="header-left">
+            <div class="logo-badge">
+                <span class="satellite-icon">🛰️</span>
+                <div class="logo-text">
+                    <h1>ORBITGUARD AI</h1>
+                    <span class="sub-title">SPACE MISSION CONTROL &bull; DECISION SIMULATOR</span>
+                </div>
+            </div>
+            <div class="live-pill">
+                <span class="live-dot pulse"></span>
+                <span>SYSTEM ONLINE</span>
+            </div>
+        </div>
+
+        <div class="header-center">
+            <div class="disclaimer-chip">
+                <span>SIMULATED PROTOTYPE &bull; DECISION SUPPORT ARCHITECTURE</span>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <div class="scenario-selector-box">
+                <label for="scenarioSelect">SIMULATION SCENARIO / FAULT:</label>
+                <select id="scenarioSelect" onchange="handleScenarioChange()">
+                    <option value="normal">Normal Conjunction (Baseline)</option>
+                    <option value="high_speed">Hypervelocity Debris (Extreme)</option>
+                    <option value="low_battery">Low Battery Mode (Eclipse)</option>
+                    <option value="sensor_failure">Sensor Covariance Glitch</option>
+                    <option value="communication_loss">Ground Link Blackout</option>
+                </select>
+            </div>
+            <div class="mission-clock">
+                <span class="clock-label">MISSION UTC</span>
+                <span id="utcClock" class="clock-time">00:00:00 UTC</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN GRID DASHBOARD -->
+    <main class="dashboard-grid">
+
+        <!-- ================= LEFT PANEL: SATELLITE STATUS ================= -->
+        <section class="panel panel-satellite">
+            <div class="panel-header">
+                <h2><span class="icon">🛰️</span> VIRTUAL SATELLITE</h2>
+                <span id="satMissionBadge" class="status-badge badge-active">OPERATIONAL</span>
+            </div>
+
+            <div class="sat-id-card">
+                <div class="sat-name">SENTINEL-ORBITGUARD (OG-SAT-1)</div>
+                <div class="sat-orbit-type">Low Earth Orbit (LEO) &bull; Inc: 51.6°</div>
+            </div>
+
+            <div class="telemetry-grid">
+                <div class="telemetry-item">
+                    <span class="label">ALTITUDE</span>
+                    <span id="satAltitude" class="val">550.0 km</span>
+                </div>
+                <div class="telemetry-item">
+                    <span class="label">VELOCITY</span>
+                    <span id="satVelocity" class="val">7.59 km/s</span>
+                </div>
+                <div class="telemetry-item">
+                    <span class="label">TEMPERATURE</span>
+                    <span id="satTemp" class="val">21.4 °C</span>
+                </div>
+                <div class="telemetry-item">
+                    <span class="label">COMMS SIGNAL</span>
+                    <span id="satComms" class="val">98%</span>
+                </div>
+            </div>
+
+            <!-- Battery Gauge -->
+            <div class="health-bar-container">
+                <div class="health-bar-label">
+                    <span>BATTERY RESERVE</span>
+                    <span id="batteryPctText">88.5%</span>
+                </div>
+                <div class="bar-track">
+                    <div id="batteryBar" class="bar-fill" style="width: 88.5%;"></div>
+                </div>
+            </div>
+
+            <!-- Propellant & Delta-V -->
+            <div class="health-bar-container">
+                <div class="health-bar-label">
+                    <span>PROPELLANT & DELTA-V BUDGET</span>
+                    <span id="propellantText">42.0 kg / 120.0 m/s</span>
+                </div>
+                <div class="bar-track">
+                    <div id="propellantBar" class="bar-fill cyan-fill" style="width: 84%;"></div>
+                </div>
+            </div>
+
+            <!-- Orientation -->
+            <div class="subsystem-box">
+                <div class="box-title">VIRTUAL ATTITUDE (ORIENTATION)</div>
+                <div class="attitude-readout">
+                    <div><span>ROLL:</span> <strong id="attRoll">0.0°</strong></div>
+                    <div><span>PITCH:</span> <strong id="attPitch">0.0°</strong></div>
+                    <div><span>YAW:</span> <strong id="attYaw">0.0°</strong></div>
+                </div>
+            </div>
+
+            <!-- Subsystem Health Indicators -->
+            <div class="subsystems-status">
+                <div class="box-title">ON-BOARD SUBSYSTEMS</div>
+                <div class="subsystem-tags">
+                    <span id="tagStarTracker" class="sub-tag ok">STAR TRACKER</span>
+                    <span id="tagImu" class="sub-tag ok">3-AXIS IMU</span>
+                    <span id="tagGnss" class="sub-tag ok">GNSS RECEIVER</span>
+                    <span id="tagRcs" class="sub-tag ok">RCS THRUSTERS</span>
+                    <span id="tagRwa" class="sub-tag ok">REACTION WHEELS</span>
+                </div>
+            </div>
+
+            <!-- Tracked Debris Catalog -->
+            <div class="tracked-debris-box">
+                <div class="box-title">TRACKED DEBRIS CATALOG (<span id="debrisCount">3</span>)</div>
+                <div id="debrisListContainer" class="debris-catalog-list">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= CENTER PANEL: ORBIT VISUALIZATION ================= -->
+        <section class="panel panel-center-orbit">
+            <div class="panel-header">
+                <h2><span class="icon">🌍</span> ORBIT SIMULATION & TRAJECTORY PREDICTOR</h2>
+                <div class="canvas-controls">
+                    <button class="btn-tool" onclick="toggleTrajectoryMode()" title="Toggle Trajectory View">
+                        <span id="trajToggleText">PRE & POST</span>
+                    </button>
+                    <button class="btn-tool" onclick="toggleOrbitAnimation()" title="Play/Pause">
+                        <span id="animPlayIcon">⏸️ PAUSE</span>
+                    </button>
+                    <button class="btn-tool" onclick="resetCanvasView()" title="Center">🎯 RESET VIEW</button>
+                </div>
+            </div>
+
+            <!-- Canvas Container -->
+            <div class="canvas-wrapper">
+                <canvas id="orbitCanvas" width="700" height="420"></canvas>
+                <div class="canvas-overlay-stats">
+                    <div class="overlay-stat">
+                        <span class="stat-dot sat-dot"></span>
+                        <span>OG-SAT-1 (Green)</span>
+                    </div>
+                    <div class="overlay-stat">
+                        <span class="stat-dot deb-dot"></span>
+                        <span>Primary Debris (Red)</span>
+                    </div>
+                    <div class="overlay-stat">
+                        <span class="stat-dot post-dot"></span>
+                        <span>Post-Maneuver Orbit (Cyan)</span>
+                    </div>
+                    <div class="overlay-stat">
+                        <span class="stat-dot ca-dot"></span>
+                        <span>Conjunction TCA (Yellow Pulse)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-time Conjunction Ribbon -->
+            <div class="conjunction-ribbon">
+                <div class="ribbon-col">
+                    <span class="r-label">DISTANCE TO DEBRIS</span>
+                    <span id="liveDistance" class="r-val highlight">-- km</span>
+                </div>
+                <div class="ribbon-col">
+                    <span class="r-label">RELATIVE SPEED</span>
+                    <span id="liveRelVel" class="r-val">-- km/s</span>
+                </div>
+                <div class="ribbon-col">
+                    <span class="r-label">TIME TO CLOSEST APPROACH</span>
+                    <span id="liveTca" class="r-val">-- min</span>
+                </div>
+                <div class="ribbon-col">
+                    <span class="r-label">PREDICTED MISS DISTANCE</span>
+                    <span id="liveMinDist" class="r-val">-- m</span>
+                </div>
+            </div>
+
+            <!-- BEFORE vs AFTER Trajectory Comparison View -->
+            <div id="beforeAfterSection" class="before-after-card hidden">
+                <div class="ba-header">
+                    <span class="ba-title">🔄 TRAJECTORY COMPARISON: BEFORE VS AFTER MANEUVER</span>
+                    <span id="baSafetyBadge" class="status-badge badge-safe">SAFE ✅</span>
+                </div>
+                <div class="ba-grid">
+                    <div class="ba-box before-box">
+                        <span class="ba-tag">BEFORE MANEUVER</span>
+                        <div class="ba-stat">Collision Risk: <strong id="baBeforeRisk" class="danger-text">87.5 / 100</strong></div>
+                        <div class="ba-stat">Miss Distance: <strong id="baBeforeDist">180 m</strong></div>
+                        <div class="ba-stat">Geometry: <span class="dim">Intersecting Conjunction Point</span></div>
+                    </div>
+                    <div class="ba-arrow">➔</div>
+                    <div class="ba-box after-box">
+                        <span class="ba-tag">AFTER MANEUVER</span>
+                        <div class="ba-stat">Collision Risk: <strong id="baAfterRisk" class="safe-text">3.2 / 100</strong></div>
+                        <div class="ba-stat">Miss Distance: <strong id="baAfterDist">14.2 km</strong></div>
+                        <div class="ba-stat">Geometry: <span class="cyan-text">Safely Deflected Orbital Path</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= RIGHT PANEL: RISK & EXPLAINABILITY ================= -->
+        <section class="panel panel-risk">
+            <div class="panel-header">
+                <h2><span class="icon">🚨</span> COLLISION RISK ENGINE</h2>
+                <span id="riskStatusBadge" class="status-badge badge-neutral">STANDBY</span>
+            </div>
+
+            <!-- Risk Score Big Display -->
+            <div class="risk-gauge-container">
+                <div class="risk-circle-wrapper">
+                    <svg class="risk-svg" viewBox="0 0 120 120">
+                        <circle class="risk-bg" cx="60" cy="60" r="50"></circle>
+                        <circle id="riskMeter" class="risk-meter" cx="60" cy="60" r="50"></circle>
+                    </svg>
+                    <div class="risk-number-box">
+                        <span id="riskScoreVal" class="big-score">--</span>
+                        <span class="score-max">/ 100</span>
+                    </div>
+                </div>
+                <div class="risk-status-desc">
+                    <div class="status-title">ALERT LEVEL</div>
+                    <div id="riskStatusText" class="status-label">WAITING FOR SIMULATION</div>
+                    <div id="confidenceText" class="status-conf">Covariance Confidence: 94.8%</div>
+                </div>
+            </div>
+
+            <!-- Explainable Factor Decomposition -->
+            <div class="explainability-box">
+                <div class="box-title">EXPLAINABLE RISK BREAKDOWN</div>
+                <div class="factor-row">
+                    <span>PROXIMITY FACTOR (Max 45)</span>
+                    <strong id="factorProximity">-- / 45</strong>
+                </div>
+                <div class="bar-track factor-track">
+                    <div id="factorProxBar" class="bar-fill danger-fill" style="width: 0%;"></div>
+                </div>
+
+                <div class="factor-row">
+                    <span>KINETIC ENERGY FACTOR (Max 25)</span>
+                    <strong id="factorKinetic">-- / 25</strong>
+                </div>
+                <div class="bar-track factor-track">
+                    <div id="factorKinBar" class="bar-fill warning-fill" style="width: 0%;"></div>
+                </div>
+
+                <div class="factor-row">
+                    <span>URGENCY / TCA FACTOR (Max 20)</span>
+                    <strong id="factorUrgency">-- / 20</strong>
+                </div>
+                <div class="bar-track factor-track">
+                    <div id="factorUrgBar" class="bar-fill warning-fill" style="width: 0%;"></div>
+                </div>
+
+                <div class="factor-row">
+                    <span>UNCERTAINTY & HEALTH (Max 10)</span>
+                    <strong id="factorHealth">-- / 10</strong>
+                </div>
+                <div class="bar-track factor-track">
+                    <div id="factorHlthBar" class="bar-fill yellow-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <!-- Plain-English Rationale -->
+            <div class="reasons-box">
+                <div class="box-title">WHY IS RISK AT THIS LEVEL?</div>
+                <ul id="riskReasonsList" class="reasons-list">
+                    <li>Awaiting collision trajectory simulation run.</li>
+                </ul>
+            </div>
+
+            <!-- Debris Classification: Threat vs Resource -->
+            <div class="classification-card">
+                <div class="box-title">DEBRIS INTELLIGENCE & CLASSIFICATION</div>
+                <div id="debrisClassBadge" class="class-badge badge-threat">
+                    ☄️ THREAT: AVOID
+                </div>
+                <p id="debrisClassRationale" class="class-text">
+                    Hypervelocity fragment requiring orbital avoidance deflection.
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= BOTTOM SECTION: DECISION SUPPORT & HARDWARE ================= -->
+    <section class="bottom-command-center">
+
+        <!-- AI RECOMMENDATION & MANEUVER MATRIX -->
+        <div class="maneuver-decision-panel">
+            <div class="panel-header">
+                <h2><span class="icon">🤖</span> AI DECISION ENGINE & TACTICAL MANEUVERS</h2>
+                <span class="algo-tag">MULTI-ATTRIBUTE UTILITY OPTIMIZER</span>
+            </div>
+
+            <!-- Recommendation Callout -->
+            <div id="aiRecommendationBanner" class="ai-recommend-banner">
+                <div class="rec-icon">⭐</div>
+                <div class="rec-content">
+                    <div class="rec-title">
+                        <span>AI RECOMMENDATION:</span>
+                        <strong id="aiRecName">RUN SIMULATION TO GENERATE CANDIDATE MANEUVERS</strong>
+                    </div>
+                    <p id="aiRecReason" class="rec-reason">
+                        ORBITGUARD AI evaluates candidate burns against collision risk, propellant mass, mission continuity, and satellite health.
+                    </p>
+                </div>
+            </div>
+
+            <!-- 3 Maneuver Cards -->
+            <div class="maneuvers-grid">
+                <!-- Maneuver A -->
+                <div id="cardManeuverA" class="maneuver-card">
+                    <div class="m-card-header">
+                        <span class="m-title">MANEUVER A</span>
+                        <span class="m-type">ALTITUDE BOOST</span>
+                    </div>
+                    <div class="m-strategy">Prograde Apogee Boost (+8.2 km altitude)</div>
+                    <div class="m-stats">
+                        <div><span>ΔV Cost:</span> <strong>14.5 m/s (HIGH)</strong></div>
+                        <div><span>Post-Burn Risk:</span> <strong class="warning-text">11.4%</strong></div>
+                        <div><span>Propellant:</span> <strong>~0.94 kg</strong></div>
+                        <div><span>Mission Impact:</span> <strong>MEDIUM (Payload Paused)</strong></div>
+                    </div>
+                    <button class="btn-select-maneuver" onclick="selectManeuver('A')">SELECT MANEUVER A</button>
+                </div>
+
+                <!-- Maneuver B -->
+                <div id="cardManeuverB" class="maneuver-card recommended-card">
+                    <div class="m-card-header">
+                        <div class="m-rec-badge">⭐ AI OPTIMAL CHOICE</div>
+                        <span class="m-title">MANEUVER B</span>
+                        <span class="m-type">PHASING SHIFT</span>
+                    </div>
+                    <div class="m-strategy">Along-Track Timing Shift (+45 sec conjunction delay)</div>
+                    <div class="m-stats">
+                        <div><span>ΔV Cost:</span> <strong class="safe-text">3.8 m/s (LOW)</strong></div>
+                        <div><span>Post-Burn Risk:</span> <strong class="safe-text">2.8% (SAFE)</strong></div>
+                        <div><span>Propellant:</span> <strong>~0.25 kg</strong></div>
+                        <div><span>Mission Impact:</span> <strong class="safe-text">LOW (Payload Active)</strong></div>
+                    </div>
+                    <button class="btn-select-maneuver btn-recommended" onclick="selectManeuver('B')">SELECT MANEUVER B ⭐</button>
+                </div>
+
+                <!-- Maneuver C -->
+                <div id="cardManeuverC" class="maneuver-card">
+                    <div class="m-card-header">
+                        <span class="m-title">MANEUVER C</span>
+                        <span class="m-type">CROSS-TRACK DEFLECTION</span>
+                    </div>
+                    <div class="m-strategy">Out-of-Plane Normal Thrust (4.8 km lateral clearance)</div>
+                    <div class="m-stats">
+                        <div><span>ΔV Cost:</span> <strong>8.5 m/s (MEDIUM)</strong></div>
+                        <div><span>Post-Burn Risk:</span> <strong class="warning-text">5.1%</strong></div>
+                        <div><span>Propellant:</span> <strong>~0.55 kg</strong></div>
+                        <div><span>Mission Impact:</span> <strong>MEDIUM (Attitude Slew)</strong></div>
+                    </div>
+                    <button class="btn-select-maneuver" onclick="selectManeuver('C')">SELECT MANEUVER C</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIRTUAL HARDWARE & MISSION EVENT LOG -->
+        <div class="hardware-logs-panel">
+            
+            <!-- Virtual Hardware Telemetry Box -->
+            <div class="virtual-hardware-box">
+                <div class="panel-header">
+                    <h2><span class="icon">⚙️</span> VIRTUAL HARDWARE VERIFICATION</h2>
+                    <span id="hardwareStatusPill" class="sub-tag ok">READY</span>
+                </div>
+                <div class="v-hw-grid">
+                    <!-- Virtual Actuator -->
+                    <div class="v-hw-cell">
+                        <div class="hw-cell-title">🚀 VIRTUAL ACTUATOR (RCS / RWA)</div>
+                        <div id="actuatorStatusText" class="hw-stat-val">IDLE &bull; Ready for Burn Command</div>
+                        <div id="actuatorDetails" class="hw-details">
+                            Software actuator models 3-axis reaction wheel torque and cold-gas thruster delta-V injection.
+                        </div>
+                    </div>
+
+                    <!-- Virtual Sensor -->
+                    <div class="v-hw-cell">
+                        <div class="hw-cell-title">📡 VIRTUAL SENSOR (IMU / STAR TRACKER)</div>
+                        <div id="sensorStatusText" class="hw-stat-val">CALIBRATED &bull; Monitoring Telemetry</div>
+                        <div id="sensorDetails" class="hw-details">
+                            Cross-checks commanded attitude slew & delta-V against simulated measurements within tolerance.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terminal Event Logs -->
+            <div class="terminal-logs-box">
+                <div class="panel-header logs-header">
+                    <h2><span class="icon">📜</span> MISSION EVENT LOG</h2>
+                    <button class="btn-mini" onclick="clearEventLogs()">CLEAR LOGS</button>
+                </div>
+                <div id="eventLogsTerminal" class="logs-terminal">
+                    <div class="log-entry">
+                        <span class="log-time">[00:00:00]</span>
+                        <span class="log-msg">ORBITGUARD AI initialized. Standby mode active.</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- FIXED MISSION COMMAND CONTROLLER BAR -->
+    <footer class="mission-footer-bar">
+        <div class="footer-left">
+            <span class="cmd-label">MISSION ACTION CONTROLS:</span>
+            <span id="footerStatusPrompt" class="cmd-prompt">1. Click [SIMULATE CONJUNCTION] to run orbital prediction.</span>
+        </div>
+
+        <div class="footer-buttons">
+            <button id="btnSimulate" class="btn btn-primary" onclick="simulateConjunction()">
+                🚀 SIMULATE CONJUNCTION
+            </button>
+            <button id="btnApprove" class="btn btn-approve disabled" onclick="approveAndExecute()" disabled>
+                ✅ APPROVE & EXECUTE
+            </button>
+            <button id="btnReject" class="btn btn-reject disabled" onclick="rejectManeuver()" disabled>
+                ❌ REJECT MANEUVER
+            </button>
+            <button id="btnReassess" class="btn btn-warning" onclick="reassessSafety()">
+                🔄 REASSESS SAFETY
+            </button>
+            <button id="btnReset" class="btn btn-secondary" onclick="resetAll()">
+                ↩ RESET SYSTEM
+            </button>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="{{ url_for('static', filename='orbit.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
